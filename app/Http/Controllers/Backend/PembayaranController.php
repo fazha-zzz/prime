@@ -45,15 +45,15 @@ class PembayaranController extends Controller
 
     ]);
 
-    if (\Carbon\Carbon::parse($request->tanggal)->day != 1) {
-        return back()->withErrors(['tanggal' => 'Pembayaran hanya bisa pada tanggal 1 setiap bulan.'])->withInput();
+    if (\Carbon\Carbon::parse($request->tanggal)->day != 3) {
+        return back()->withErrors(['tanggal' => 'Pembayaran hanya bisa pada tanggal 3 setiap bulan.'])->withInput();
     }
     
     $pembayaran = new Pembayaran();
     $pembayaran->keamanan   = 101120;  // nilai tetap
     $pembayaran->kebersihan = 40000;   // nilai tetap
     $pembayaran->tanggal    = $request->tanggal;
-    $pembayaran->total      = $pembayaran->keamanan + $pembayaran->kebersihan; 
+    $pembayaran->total      = 101120 + 40000; 
     $pembayaran->status = 'belum terbayar';
     $pembayaran->save();
 
@@ -84,20 +84,20 @@ class PembayaranController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'tanggal' => 'required|unique:pembayarans,tanggal,' . $id, // unique kecuali data ini
-        ]);
+        // $validated = $request->validate([
+        //     'tanggal' => 'required|unique:pembayarans,tanggal,' . $id, // unique kecuali data ini
+        // ]);
 
-        $pembayaran             = Pembayaran::findOrFail($id);
-        $pembayaran->keamanan   = 101120; // tetap
-        $pembayaran->kebersihan = 40000;  // tetap
-        $pembayaran->tanggal    = $request->tanggal;
-        $pembayaran->total      = $pembayaran->keamanan + $pembayaran->kebersihan;
-        $pembayaran->status     = $request->status ?? $pembayaran->status;
-        $pembayaran->save();
+        // $pembayaran             = Pembayaran::findOrFail($id);
+        // $pembayaran->keamanan   = 101120; // tetap
+        // $pembayaran->kebersihan = 40000;  // tetap
+        // $pembayaran->tanggal    = $request->tanggal;
+        // $pembayaran->total      = $pembayaran->keamanan + $pembayaran->kebersihan;
+        // $pembayaran->status     = $request->status ?? $pembayaran->status;
+        // $pembayaran->save();
 
-        toast('Data berhasil diperbarui', 'success');
-        return redirect()->route('backend.pembayaran.index');
+        // toast('Data berhasil diperbarui', 'success');
+        // return redirect()->route('backend.pembayaran.index');
     }
 
     /**
@@ -105,9 +105,11 @@ class PembayaranController extends Controller
      */
     public function destroy(string $id)
     {
-       $pembayaran->delete();
-        toast('Data berhasil dihapus', 'success');
-        return redirect()->route('backend.pembayaran.index');
+       $pembayaran = Pembayaran::findOrFail($id);
+    $pembayaran->delete();
+
+    toast('Data berhasil dihapus', 'success');
+    return redirect()->route('backend.pembayaran.index');
     }
 
     public function setLunas(Pembayaran $pembayaran)
